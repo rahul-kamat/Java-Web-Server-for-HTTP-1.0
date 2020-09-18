@@ -4,6 +4,12 @@ import java.io.*;
 import java.util.concurrent.*;
 
 public class PartialHTTP1Server {
+  
+  public Socket clientSocket;
+  public PartialHTTP1Server(Socket client)
+  {
+    clientSocket=client;
+  }
 
     public static void main(String[] args) throws IOException {
         System.out.println(args[0]);
@@ -39,12 +45,12 @@ public class PartialHTTP1Server {
           // while loop goes here to handle up to 50 connections
           while(true)
           {
-            ServerSocket client= server.accept();
+           Socket client= server.accept();
             try {// try thread pool connections
               
               
               //here new thread in java 
-              threadPoolExecutor.execute(new PartialHTTP1Server(portNumber));
+              threadPoolExecutor.execute(new PartialHTTP1Server(client));
             } 
             catch (Exception e) { // if thread pool fails
               
@@ -98,3 +104,4 @@ public class PartialHTTP1Server {
         }
     }
 }
+
