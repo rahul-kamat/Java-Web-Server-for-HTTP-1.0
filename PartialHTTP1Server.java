@@ -105,6 +105,120 @@ public class PartialHTTP1Server implements Runnable {
     }
     
     
+    private String getContentType(String fileName) {
+      int indexOfPeriod = fileName.lastIndexOf(".");
+      if (indexOfPeriod == -1) {
+        return "application/octet-stream";
+      }
+      
+      String fileExtension = fileName.substring(indexOfPeriod+1).toLowerCase();
+      
+      
+      if (fileExtension.equals("html") || fileExtension.equals("plain")) {
+        return "text/" + fileExtension;
+      } else if (fileExtension.equals("gif") || fileExtension.equals("jpeg") || fileExtension.equals("png")) {
+        return "image/" + fileExtension;
+      } else if (fileExtension.equals("octet-stream") || fileExtension.equals("pdf") || fileExtension.equals("x-gzip") || fileExtension.equals("zip")) {
+        return "application/" + fileExtension;
+      }
+      
+      return "application/octet-stream";      
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public String parsingCommands(String command)
+    {
+      if (command == null || command.length() == 0) {
+        return "HTTP/1.0 400 Bad Request";
+      }
+      //need to have 3 parts for it
+      String[] array=command.split("\\s+");
+      if (array.length != 3) {
+        return "HTTP/1.0 400 Bad Request";
+      }
+      String httpMethod = array[0];
+      String filePath = array[1];
+      String httpVersion = array[2];
+      if(httpMethod.equals(httpMethod.toUpperCase()) || filePath.charAt(0)!='/')
+      {
+        //display 
+        return "HTTP/1.0 400 Bad Request";
+      }
+      else if(!httpVersion.equals("HTTP/1.0"))
+      {
+        return "HTTP/1.0 505 HTTP Version Not Supported";
+      }
+      
+      //can only support GET,POST,HEAD
+      //otherwise send 501 error
+      if(httpMethod.equals("PUT") || httpMethod.equals("LINK") || httpMethod.equals("UNLINK") || httpMethod.equals("DELETE") )
+      {
+        return "HTTP/1.0 501 Not Implemented";
+      }
+      //for any other command, its bad/invalid request
+      else if(!httpMethod.equals("GET") && !httpMethod.equals("POST") && !httpMethod.equals("HEAD"))
+      {
+        return "HTTP/1.0 400 Bad Request";
+      }
+      
+      //check for filePath
+      //if file not found 404
+      File file=new File("."+filePath);
+      if(!file.exists())
+      {
+        return "HTTP/1.0 404 Not Found";
+      }
+      
+      //check if we can read the file or not
+      
+      //if forbidden 403
+     // try{
+        if(file.canRead())
+      {
+        // HTTP/1.0 200 OK
+      }
+      else 
+      {
+        return "HTTP/1.0 403 Forbidden";
+      }
+    /*  }
+      catch(IOException fileNotOpen)
+      {
+        return "HTTP/1.0 500 Internal Server Error";
+      }
+      */
+      return "";
+      
+      // success
+    }
+    
+    // HTTP/1.0 505 HTTP Version Not Supported
+    
+    
+    
+    
+    
+    
     //because we used Runnable in thread pool, we have to create method run
     public void run()
     {
@@ -114,7 +228,40 @@ public class PartialHTTP1Server implements Runnable {
       try{
         //use bufferreader as shown in knock knock 
     
-      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String command = "";
+        String modified = "";
+        
+        int line = 0;
+        while (line < 2) {
+          String readLine = in.readLine();
+          if (line == 0) {
+            command = readLine;
+          } else {
+            modified = readLine;
+          }
+          line++;
+        }
+        
+        System.out.println("Command: " + command);
+        System.out.println("Modified: " + modified);
+        
+        String parsedClintInput = parsingCommands(command);
+        System.out.println("Parsed Client Input:" + parsedClintInput);
+        
+        
+       
+       // GET /index.html
+       //string 0 - GET,POST,,, Capitalized
+       
+       
+       //working test case
+       
+       //  GET /index.html HTTP/1.0
+       
+       //string 0 - GET capitalized
+       //string 1- starts with a / and then file name
+       //string 2 - its HTTP/1.0
        
        
       }
