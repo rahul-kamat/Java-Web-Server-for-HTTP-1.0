@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class PartialHTTP1Server {
+public class PartialHTTP1Server implements Runnable {
   
   public Socket clientSocket;
   public PartialHTTP1Server(Socket client)
@@ -52,7 +52,7 @@ public class PartialHTTP1Server {
               //here new thread in java 
               threadPoolExecutor.execute(new PartialHTTP1Server(client));
             } 
-            catch (Exception e) { // if thread pool fails
+            catch (Exception threadPoolFail) { // if thread pool fails
               
               try{//if connection established but still have some error
                   // PrintWriter for print error to client
@@ -62,7 +62,7 @@ public class PartialHTTP1Server {
               printWriter.close();
               server.close();
               }
-              catch(Exception e)
+              catch(Exception connectionFail)
               {//if connection is not established
               //then can't printWriter to client
                 System.out.println("Error handling client");
@@ -71,7 +71,7 @@ public class PartialHTTP1Server {
             }
           }
         //while loop end
-        } catch (Expection e) {
+        } catch (Exception initialServerFail) {
           System.out.println("Error :: Initial Server Failed");
       
             
@@ -103,5 +103,32 @@ public class PartialHTTP1Server {
           return -1;
         }
     }
+    
+    
+    //because we used Runnable in thread pool, we have to create method run
+    public void run()
+    {
+      // we have to read commands from client
+      
+      //use try catch , see knock knock
+      try{
+        //use bufferreader as shown in knock knock 
+    
+      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+       
+       
+      }
+      catch(Exception e)
+      {
+        //exception in bufferReader
+        
+        
+      }
+      
+      
+    }
+    
+    
+    
 }
 
